@@ -5,7 +5,7 @@ package chat_v1;
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
-option go_package = "github.com/Iusemywalk88/boilerplate/microservices_course_boilerplate-main/chat-server/pkg/user_v1;user_v1";
+option go_package = "github.com/Iusemywalk88/boilerplate/microservices_course_boilerplate/chat-server/pkg/chat_v1;chat_v1";
 
 service ChatV1{
   rpc Create(CreateRequest) returns (CreateResponse);
