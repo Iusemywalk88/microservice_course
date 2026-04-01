@@ -1,4 +1,4 @@
-module github.com/Iusemywalk88/boilerplate/microservices_course_boilerplate
+module github.com/Iusemywalk88/boilerplate/auth
 
 go 1.24.0
 
