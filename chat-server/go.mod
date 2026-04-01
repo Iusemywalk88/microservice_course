@@ -1,4 +1,4 @@
-module github.com/Iusemywalk88/boilerplate/chat-server
+module github.com/Iusemywalk88/microservice_course/chat-server
 
 go 1.24.0
 
