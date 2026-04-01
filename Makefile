@@ -16,15 +16,6 @@ get-deps:
 	go get -u google.golang.org/protobuf/cmd/protoc-gen-go
 	go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
-generate-note-api:
-	mkdir -p auth/pkg/note_v1
-	protoc --proto_path auth/api/note_v1 \
-	--go_out=auth/pkg/note_v1 --go_opt=paths=source_relative \
-	--plugin=protoc-gen-go=$(LOCAL_BIN)/protoc-gen-go \
-	--go-grpc_out=auth/pkg/note_v1 --go-grpc_opt=paths=source_relative \
-	--plugin=protoc-gen-go-grpc=$(LOCAL_BIN)/protoc-gen-go-grpc \
-	auth/api/note_v1/note.proto
-
 generate-user-api:
 	mkdir -p auth/pkg/user_v1
 	protoc --proto_path auth/api/user_v1 \
