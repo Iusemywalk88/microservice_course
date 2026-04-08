@@ -6,14 +6,11 @@ toolchain go1.24.2
 
 require (
 	github.com/brianvoe/gofakeit/v6 v6.28.0
-	github.com/fatih/color v1.17.0
 	google.golang.org/grpc v1.70.0
 	google.golang.org/protobuf v1.36.11
 )
 
 require (
-	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.20 // indirect
 	go.opentelemetry.io/otel v1.34.0 // indirect
 	go.opentelemetry.io/otel/sdk/metric v1.34.0 // indirect
 	golang.org/x/net v0.38.0 // indirect

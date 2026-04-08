@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	desc "github.com/Iusemywalk88/boilerplate/chat-server/pkg/chat_v1"
+	desc "github.com/Iusemywalk88/microservice_course/chat-server/pkg/chat_v1"
 	"github.com/brianvoe/gofakeit/v6"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"

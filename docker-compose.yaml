@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  auth:
+    build: ./auth
+    ports:
+      - "${AUTH_PORT}:50051"
+    depends_on:
+      - postgres
+    networks:
+      - microservice-network
+
+  chat-server:
+    build: ./chat-server
+    ports:
+      - "${CHAT_PORT}:50052"
+    depends_on:
+      - postgres
+    networks:
+      - microservice-network
+
+  postgres:
+    image: postgres:14-alpine3.17
+    environment:
+      - "POSTGRES_DB=${POSTGRES_DB:-postgres}"
+      - "POSTGRES_USER=${POSTGRES_USER}"
+      - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - microservice-network
+
+volumes:
+  pgdata:
+
+networks:
+  microservice-network:
+    driver: bridge
