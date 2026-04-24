@@ -32,6 +32,16 @@ services:
     networks:
       - microservice-network
 
+  migrator:
+    build:
+      context: .
+      dockerfile: migration.Dockerfile
+    restart: on-failure
+    environment:
+      DB_HOST: postgres
+    networks:
+      - microservice-network
+
 volumes:
   pgdata:
 

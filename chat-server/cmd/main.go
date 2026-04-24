@@ -5,6 +5,7 @@ import (
 	"flag"
 	"github.com/Iusemywalk88/microservice_course/chat-server/config"
 	desc "github.com/Iusemywalk88/microservice_course/chat-server/pkg/chat_v1"
+	sq "github.com/Masterminds/squirrel"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"google.golang.org/grpc"
@@ -73,6 +74,26 @@ func main() {
 		log.Fatalf("failed to connect to database: %v", err)
 	}
 	defer pool.Close()
+
+	// Делаем запрос на вставку записи в таблицу note
+	builderInsert := sq.Insert("chats").
+		PlaceholderFormat(sq.Dollar).
+		Columns("name").
+		Values(gofakeit.Name()).
+		Suffix("RETURNING id")
+
+	query, args, err := builderInsert.ToSql()
+	if err != nil {
+		log.Fatalf("failed to build query: %v", err)
+	}
+
+	var chatID int
+	err = pool.QueryRow(ctx, query, args...).Scan(&chatID)
+	if err != nil {
+		log.Fatalf("failed to insert note: %v", err)
+	}
+
+	log.Printf("inserted note with id: %d", chatID)
 
 	s := grpc.NewServer()
 	reflection.Register(s)
