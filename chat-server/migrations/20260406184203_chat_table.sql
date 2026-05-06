@@ -2,9 +2,7 @@
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS chats (
     id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS chat_members (
@@ -17,10 +15,13 @@ CREATE TABLE IF NOT EXISTS chat_members (
 CREATE TABLE IF NOT EXISTS messages (
     id BIGSERIAL PRIMARY KEY,
     chat_id BIGINT REFERENCES chats(id) ON DELETE CASCADE,
-    "from" VARCHAR(255) NOT NULL,
+    sender_name VARCHAR(255) NOT NULL,
     text TEXT NOT NULL,
     timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+CREATE INDEX IF NOT EXISTS idx_chat_members_chat_id ON chat_members(chat_id);
+CREATE INDEX IF NOT EXISTS idx_messages_chat_id ON messages(chat_id);
 -- +goose StatementEnd
 
 -- +goose Down

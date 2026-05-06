@@ -3,14 +3,14 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/Iusemywalk88/microservice_course/auth/config"
+	config "github.com/Iusemywalk88/microservice_course/auth/internal/config"
+	"github.com/Iusemywalk88/microservice_course/auth/internal/repository"
+	"github.com/Iusemywalk88/microservice_course/auth/internal/repository/auth"
 	desc "github.com/Iusemywalk88/microservice_course/auth/pkg/user_v1"
-	"github.com/brianvoe/gofakeit/v6"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"log"
 	"net"
 )
@@ -23,25 +23,29 @@ func init() {
 
 type server struct {
 	desc.UnimplementedUserV1Server
+	authRepository repository.AuthRepository
 }
 
 func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
-	log.Printf("Get called with req: %v", req.GetId())
+	userObj, err := s.authRepository.Get(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
 
-	return &desc.GetResponse{
-		Id:        req.GetId(),
-		Name:      gofakeit.Name(),
-		Email:     gofakeit.Email(),
-		Role:      1,
-		CreatedAt: timestamppb.New(gofakeit.Date()),
-		UpdatedAt: timestamppb.New(gofakeit.Date()),
-	}, nil
+	log.Printf("id: %d, name: %s, email: %s, role: %d", userObj.Id, userObj.Name, userObj.Email, userObj.Role)
+
+	return userObj, nil
 }
 
 func (s *server) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
-	log.Printf("Create called with req: %v", req.GetName())
+	id, err := s.authRepository.Create(ctx, req)
+	if err != nil {
+		return nil, err
+	}
 
-	return &desc.CreateResponse{Id: gofakeit.Int64()}, nil
+	log.Printf("Create called with id: %v", id)
+
+	return &desc.CreateResponse{Id: id}, nil
 }
 
 func (s *server) Update(ctx context.Context, req *desc.UpdateRequest) (*emptypb.Empty, error) {
@@ -88,9 +92,11 @@ func main() {
 	}
 	defer pool.Close()
 
+	authRepo := auth.NewRepository(pool)
+
 	s := grpc.NewServer()
 	reflection.Register(s)
-	desc.RegisterUserV1Server(s, &server{})
+	desc.RegisterUserV1Server(s, &server{authRepository: authRepo})
 
 	log.Printf("server listening at %v", lis.Addr())
 

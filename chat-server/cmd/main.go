@@ -3,10 +3,11 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/Iusemywalk88/microservice_course/chat-server/config"
+	config "github.com/Iusemywalk88/microservice_course/chat-server/internal/config"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/repository"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/repository/chat"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/repository/converter"
 	desc "github.com/Iusemywalk88/microservice_course/chat-server/pkg/chat_v1"
-	sq "github.com/Masterminds/squirrel"
-	"github.com/brianvoe/gofakeit/v6"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -23,12 +24,22 @@ func init() {
 
 type server struct {
 	desc.UnimplementedChatV1Server
+	chatRepository repository.ChatRepository
 }
 
 func (s *server) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
+	chatMembers, err := converter.ToChatFromService(req)
+	if err != nil {
+		return nil, err
+	}
+
+	chatObj, err := s.chatRepository.Create(ctx, chatMembers)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("Create: %v", req.GetUsernames())
 
-	return &desc.CreateResponse{Id: gofakeit.Int64()}, nil
+	return &desc.CreateResponse{Id: chatObj}, nil
 }
 
 func (s *server) Delete(ctx context.Context, req *desc.DeleteRequest) (*emptypb.Empty, error) {
@@ -75,29 +86,11 @@ func main() {
 	}
 	defer pool.Close()
 
-	// Делаем запрос на вставку записи в таблицу note
-	builderInsert := sq.Insert("chats").
-		PlaceholderFormat(sq.Dollar).
-		Columns("name").
-		Values(gofakeit.Name()).
-		Suffix("RETURNING id")
-
-	query, args, err := builderInsert.ToSql()
-	if err != nil {
-		log.Fatalf("failed to build query: %v", err)
-	}
-
-	var chatID int
-	err = pool.QueryRow(ctx, query, args...).Scan(&chatID)
-	if err != nil {
-		log.Fatalf("failed to insert note: %v", err)
-	}
-
-	log.Printf("inserted note with id: %d", chatID)
+	chatRepo := chat.NewRepository(pool)
 
 	s := grpc.NewServer()
 	reflection.Register(s)
-	desc.RegisterChatV1Server(s, &server{})
+	desc.RegisterChatV1Server(s, &server{chatRepository: chatRepo})
 
 	log.Printf("server listening at %v", lis.Addr())
 
