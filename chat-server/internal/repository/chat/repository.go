@@ -2,7 +2,7 @@ package chat
 
 import (
 	"context"
-	"github.com/Iusemywalk88/microservice_course/chat-server/internal/repository/chat/model"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/model"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v4/pgxpool"
 )

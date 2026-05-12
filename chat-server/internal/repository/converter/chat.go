@@ -1,22 +1,14 @@
 package converter
 
 import (
-	"github.com/Iusemywalk88/microservice_course/chat-server/internal/repository/chat/model"
-	desc "github.com/Iusemywalk88/microservice_course/chat-server/pkg/chat_v1"
-	"strconv"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/model"
+	modelRepo "github.com/Iusemywalk88/microservice_course/chat-server/internal/repository/chat/model"
 )
 
-func ToChatFromService(req *desc.CreateRequest) (*model.Chat, error) {
-	users := make([]int64, 0)
-	for _, username := range req.GetUsernames() {
-		userID, err := strconv.ParseInt(username, 10, 64)
-		if err != nil {
-			return &model.Chat{}, err
-		}
-		users = append(users, userID)
-	}
-
-	return &model.Chat{
-		UserIDs: users,
+func ToChatFromService(req *model.Chat) (*modelRepo.Chat, error) {
+	return &modelRepo.Chat{
+		ID:        req.ID,
+		CreatedAt: req.CreatedAt,
+		UserIDs:   req.UserIDs,
 	}, nil
 }

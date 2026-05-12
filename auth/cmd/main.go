@@ -3,13 +3,17 @@ package main
 import (
 	"context"
 	"flag"
-	config "github.com/Iusemywalk88/microservice_course/auth/internal/config"
-	"github.com/Iusemywalk88/microservice_course/auth/internal/repository"
-	"github.com/Iusemywalk88/microservice_course/auth/internal/repository/auth"
+	"github.com/Iusemywalk88/microservice_course/auth/internal/config"
+	"github.com/Iusemywalk88/microservice_course/auth/internal/converter"
+	authRepo "github.com/Iusemywalk88/microservice_course/auth/internal/repository/auth"
+	"github.com/Iusemywalk88/microservice_course/auth/internal/service"
+	authService "github.com/Iusemywalk88/microservice_course/auth/internal/service/auth"
 	desc "github.com/Iusemywalk88/microservice_course/auth/pkg/user_v1"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"log"
 	"net"
@@ -23,22 +27,26 @@ func init() {
 
 type server struct {
 	desc.UnimplementedUserV1Server
-	authRepository repository.AuthRepository
+	authService service.AuthService
 }
 
 func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
-	userObj, err := s.authRepository.Get(ctx, req.Id)
+	userObj, err := s.authService.Get(ctx, req.GetId())
 	if err != nil {
 		return nil, err
 	}
 
-	log.Printf("id: %d, name: %s, email: %s, role: %d", userObj.Id, userObj.Name, userObj.Email, userObj.Role)
+	log.Printf("id: %d, name: %s, email: %s, role: %d", userObj.ID, userObj.Name, userObj.Email, userObj.UserRole)
 
-	return userObj, nil
+	return converter.ToUserFromService(*userObj), nil
 }
 
 func (s *server) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
-	id, err := s.authRepository.Create(ctx, req)
+	if req.PasswordConfirm != req.Password {
+		return nil, status.Error(codes.InvalidArgument, "passwords do not match")
+	}
+
+	id, err := s.authService.Create(ctx, converter.ToServiceFromUserCreate(req))
 	if err != nil {
 		return nil, err
 	}
@@ -92,11 +100,12 @@ func main() {
 	}
 	defer pool.Close()
 
-	authRepo := auth.NewRepository(pool)
+	authRepo := authRepo.NewRepository(pool)
+	authSrv := authService.NewService(authRepo)
 
 	s := grpc.NewServer()
 	reflection.Register(s)
-	desc.RegisterUserV1Server(s, &server{authRepository: authRepo})
+	desc.RegisterUserV1Server(s, &server{authService: authSrv})
 
 	log.Printf("server listening at %v", lis.Addr())
 

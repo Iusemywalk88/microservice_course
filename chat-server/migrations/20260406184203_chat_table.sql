@@ -15,13 +15,14 @@ CREATE TABLE IF NOT EXISTS chat_members (
 CREATE TABLE IF NOT EXISTS messages (
     id BIGSERIAL PRIMARY KEY,
     chat_id BIGINT REFERENCES chats(id) ON DELETE CASCADE,
-    sender_name VARCHAR(255) NOT NULL,
+    sender_id BIGINT NOT NULL,
     text TEXT NOT NULL,
     timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_chat_members_chat_id ON chat_members(chat_id);
 CREATE INDEX IF NOT EXISTS idx_messages_chat_id ON messages(chat_id);
+CREATE INDEX IF NOT EXISTS idx_chat_members_user_id ON chat_members(user_id);
 -- +goose StatementEnd
 
 -- +goose Down
