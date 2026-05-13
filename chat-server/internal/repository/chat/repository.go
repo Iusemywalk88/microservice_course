@@ -3,6 +3,7 @@ package chat
 import (
 	"context"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/model"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/repository/converter"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
@@ -26,6 +27,11 @@ func NewRepository(db *pgxpool.Pool) *repo {
 }
 
 func (r *repo) Create(ctx context.Context, req *model.Chat) (int64, error) {
+	crReq, err := converter.ToChatFromService(req)
+	if err != nil {
+		return 0, err
+	}
+
 	builderChat := sq.Insert(chatsTable).
 		PlaceholderFormat(sq.Dollar).
 		Columns(createdAtColumn).
@@ -47,7 +53,7 @@ func (r *repo) Create(ctx context.Context, req *model.Chat) (int64, error) {
 		PlaceholderFormat(sq.Dollar).
 		Columns(chatIdColumn, userIdColumn)
 
-	for _, userID := range req.UserIDs {
+	for _, userID := range crReq.UserIDs {
 		if err != nil {
 			return 0, err
 		}
@@ -65,4 +71,22 @@ func (r *repo) Create(ctx context.Context, req *model.Chat) (int64, error) {
 	}
 
 	return chatID, nil
+}
+
+func (r *repo) Delete(ctx context.Context, id int64) error {
+	builderChat := sq.Delete(chatsTable).
+		PlaceholderFormat(sq.Dollar).
+		Where(sq.Eq{idColumn: id})
+
+	query, args, err := builderChat.ToSql()
+	if err != nil {
+		return err
+	}
+
+	_, err = r.db.Exec(ctx, query, args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

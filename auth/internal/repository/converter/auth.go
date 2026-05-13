@@ -15,3 +15,23 @@ func ToUserFromRepo(user *modelRepo.User) *model.User {
 		UpdatedAt: user.UpdatedAt,
 	}
 }
+
+func ToRepoFromUser(user *model.User) *modelRepo.User {
+	return &modelRepo.User{
+		ID:        user.ID,
+		Name:      user.Name,
+		Email:     user.Email,
+		UserRole:  modelRepo.Role(user.UserRole),
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
+}
+
+func ToRepoFromServiceUpdate(user *model.UpdateUserInfo) *modelRepo.UpdateUserInfo {
+	return &modelRepo.UpdateUserInfo{
+		ID:       user.ID,
+		Name:     user.Name,
+		Email:    user.Email,
+		UserRole: modelRepo.Role(user.UserRole),
+	}
+}

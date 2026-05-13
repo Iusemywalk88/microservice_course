@@ -10,5 +10,5 @@ type serv struct {
 }
 
 func NewService(chatRepo repository.ChatRepository) service.ChatService {
-	return serv{chatRepo: chatRepo}
+	return &serv{chatRepo: chatRepo}
 }

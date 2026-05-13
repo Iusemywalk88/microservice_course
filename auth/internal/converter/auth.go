@@ -30,3 +30,24 @@ func ToServiceFromUserCreate(desc *desc.CreateRequest) *model.User {
 		UserRole: model.Role(desc.Role),
 	}
 }
+
+func ToServiceFromUserUpdate(desc *desc.UpdateRequest) *model.UpdateUserInfo {
+	var name *string
+	if desc.GetName() != nil {
+		val := desc.GetName().GetValue()
+		name = &val
+	}
+
+	var email *string
+	if desc.GetEmail() != nil {
+		val := desc.GetEmail().GetValue()
+		email = &val
+	}
+
+	return &model.UpdateUserInfo{
+		ID:       desc.Id,
+		Name:     name,
+		Email:    email,
+		UserRole: model.Role(desc.Role),
+	}
+}

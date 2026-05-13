@@ -21,3 +21,10 @@ type User struct {
 	CreatedAt time.Time    `db:"created_at"`
 	UpdatedAt sql.NullTime `db:"updated_at"`
 }
+
+type UpdateUserInfo struct {
+	ID       int64
+	Name     *string
+	Email    *string
+	UserRole Role
+}
