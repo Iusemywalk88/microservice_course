@@ -5,8 +5,8 @@ go 1.24.0
 toolchain go1.24.2
 
 require (
+	github.com/Iusemywalk88/closer v0.0.0-20260514104927-3e262481fd0f
 	github.com/Masterminds/squirrel v1.5.4
-	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/jackc/pgx/v4 v4.18.3
 	github.com/joho/godotenv v1.5.1
 	github.com/pkg/errors v0.9.1

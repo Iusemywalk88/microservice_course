@@ -54,9 +54,6 @@ func (r *repo) Create(ctx context.Context, req *model.Chat) (int64, error) {
 		Columns(chatIdColumn, userIdColumn)
 
 	for _, userID := range crReq.UserIDs {
-		if err != nil {
-			return 0, err
-		}
 		builderMembers = builderMembers.Values(chatID, userID)
 	}
 

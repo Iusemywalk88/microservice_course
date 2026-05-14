@@ -5,13 +5,13 @@ import (
 	desc "github.com/Iusemywalk88/microservice_course/chat-server/pkg/chat_v1"
 )
 
-type Implementation struct {
+type ChatImplementation struct {
 	desc.UnimplementedChatV1Server
 	chatService service.ChatService
 }
 
-func NewImplementation(chatService service.ChatService) *Implementation {
-	return &Implementation{
+func NewChatImplementation(chatService service.ChatService) *ChatImplementation {
+	return &ChatImplementation{
 		chatService: chatService,
 	}
 }

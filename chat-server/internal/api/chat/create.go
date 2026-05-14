@@ -6,7 +6,7 @@ import (
 	desc "github.com/Iusemywalk88/microservice_course/chat-server/pkg/chat_v1"
 )
 
-func (i *Implementation) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
+func (i *ChatImplementation) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
 	chatModel, err := converter.ToServiceFromDesc(req)
 	if err != nil {
 		return nil, err

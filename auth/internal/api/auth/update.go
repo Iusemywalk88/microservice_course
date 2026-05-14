@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-func (i *Implementation) Update(ctx context.Context, req *desc.UpdateRequest) (*emptypb.Empty, error) {
+func (i *AuthImplementation) Update(ctx context.Context, req *desc.UpdateRequest) (*emptypb.Empty, error) {
 	updateObj := converter.ToServiceFromUserUpdate(req)
 
 	err := i.authService.Update(ctx, updateObj)

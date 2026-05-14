@@ -1,0 +1,102 @@
+package app
+
+import (
+	"context"
+	"github.com/Iusemywalk88/closer"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/api/chat"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/config"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/repository"
+	chatRepo "github.com/Iusemywalk88/microservice_course/chat-server/internal/repository/chat"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/service"
+	chatService "github.com/Iusemywalk88/microservice_course/chat-server/internal/service/chat"
+	"github.com/jackc/pgx/v4/pgxpool"
+	"log"
+)
+
+type serviceProvider struct {
+	pgConfig   config.PGConfig
+	grpcConfig config.GRPCConfig
+
+	pgPool         *pgxpool.Pool
+	chatRepository repository.ChatRepository
+
+	chatService service.ChatService
+
+	chatImpl *chat.ChatImplementation
+}
+
+func newServiceProvider() *serviceProvider {
+	return &serviceProvider{}
+}
+
+func (s *serviceProvider) PGConfig() config.PGConfig {
+	if s.pgConfig == nil {
+		cfg, err := config.NewPGConfig()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		s.pgConfig = cfg
+	}
+
+	return s.pgConfig
+}
+
+func (s *serviceProvider) GRPCConfig() config.GRPCConfig {
+	if s.grpcConfig == nil {
+		cfg, err := config.NewGRPCConfig()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		s.grpcConfig = cfg
+	}
+
+	return s.grpcConfig
+}
+
+func (s *serviceProvider) PGPool(ctx context.Context) *pgxpool.Pool {
+	if s.pgPool == nil {
+		pool, err := pgxpool.Connect(ctx, s.PGConfig().DSN())
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = pool.Ping(ctx)
+		if err != nil {
+			log.Fatal(err)
+		}
+		closer.Add(func() error {
+			pool.Close()
+			return nil
+		})
+
+		s.pgPool = pool
+	}
+
+	return s.pgPool
+}
+
+func (s *serviceProvider) ChatRepository(ctx context.Context) repository.ChatRepository {
+	if s.chatRepository == nil {
+		s.chatRepository = chatRepo.NewRepository(s.PGPool(ctx))
+	}
+
+	return s.chatRepository
+}
+
+func (s *serviceProvider) ChatService(ctx context.Context) service.ChatService {
+	if s.chatService == nil {
+		s.chatService = chatService.NewService(s.ChatRepository(ctx))
+	}
+
+	return s.chatService
+}
+
+func (s *serviceProvider) ChatImpl(ctx context.Context) *chat.ChatImplementation {
+	if s.chatImpl == nil {
+		s.chatImpl = chat.NewChatImplementation(s.ChatService(ctx))
+	}
+
+	return s.chatImpl
+}

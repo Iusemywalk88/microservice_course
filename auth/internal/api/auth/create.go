@@ -9,7 +9,7 @@ import (
 	"log"
 )
 
-func (i *Implementation) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
+func (i *AuthImplementation) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
 	if req.PasswordConfirm != req.Password {
 		return nil, status.Error(codes.InvalidArgument, "passwords do not match")
 	}
