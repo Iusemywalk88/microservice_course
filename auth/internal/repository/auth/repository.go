@@ -2,11 +2,12 @@ package auth
 
 import (
 	"context"
+	"github.com/Iusemywalk88/microservice_course/auth/internal/client/db"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/model"
+	"github.com/Iusemywalk88/microservice_course/auth/internal/repository"
 	modelRepo "github.com/Iusemywalk88/microservice_course/auth/internal/repository/auth/model"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/repository/converter"
 	sq "github.com/Masterminds/squirrel"
-	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 const (
@@ -22,10 +23,10 @@ const (
 )
 
 type repo struct {
-	db *pgxpool.Pool
+	db db.Client
 }
 
-func NewRepository(db *pgxpool.Pool) *repo {
+func NewRepository(db db.Client) repository.AuthRepository {
 	return &repo{db: db}
 }
 
@@ -43,8 +44,13 @@ func (r *repo) Create(ctx context.Context, req *model.User) (int64, error) {
 		return 0, err
 	}
 
+	q := db.Query{
+		Name:     "auth_repository.Create",
+		QueryRaw: query,
+	}
+
 	var id int64
-	err = r.db.QueryRow(ctx, query, args...).Scan(&id)
+	err = r.db.DB().QueryRowContext(ctx, q, args...).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
@@ -63,8 +69,10 @@ func (r *repo) Get(ctx context.Context, id int64) (*model.User, error) {
 		return nil, err
 	}
 
+	q := db.Query{Name: "auth_repository.Get", QueryRaw: query}
+
 	var user modelRepo.User
-	err = r.db.QueryRow(ctx, query, args...).Scan(&user.ID, &user.Name, &user.Email, &user.UserRole, &user.CreatedAt, &user.UpdatedAt)
+	err = r.db.DB().ScanOneContext(ctx, &user, q, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +90,12 @@ func (r *repo) Delete(ctx context.Context, id int64) error {
 		return err
 	}
 
-	_, err = r.db.Exec(ctx, query, args...)
+	q := db.Query{
+		Name:     "auth_repository.Delete",
+		QueryRaw: query,
+	}
+
+	_, err = r.db.DB().ExecContext(ctx, q, args...)
 	if err != nil {
 		return err
 	}
@@ -110,7 +123,12 @@ func (r *repo) Update(ctx context.Context, user *model.UpdateUserInfo) error {
 		return err
 	}
 
-	_, err = r.db.Exec(ctx, query, args...)
+	q := db.Query{
+		Name:     "auth_repository.Update",
+		QueryRaw: query,
+	}
+
+	_, err = r.db.DB().ExecContext(ctx, q, args...)
 	if err != nil {
 		return err
 	}

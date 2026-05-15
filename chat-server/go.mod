@@ -7,16 +7,17 @@ toolchain go1.24.2
 require (
 	github.com/Iusemywalk88/closer v0.0.0-20260514104927-3e262481fd0f
 	github.com/Masterminds/squirrel v1.5.4
+	github.com/georgysavva/scany v1.2.3
+	github.com/jackc/pgconn v1.14.3
 	github.com/jackc/pgx/v4 v4.18.3
 	github.com/joho/godotenv v1.5.1
-	github.com/pkg/errors v0.8.1
+	github.com/pkg/errors v0.9.1
 	google.golang.org/grpc v1.70.0
 	google.golang.org/protobuf v1.36.11
 )
 
 require (
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
-	github.com/jackc/pgconn v1.14.3 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgproto3/v2 v2.3.3 // indirect

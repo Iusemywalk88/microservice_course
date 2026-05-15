@@ -4,12 +4,13 @@ import (
 	"context"
 	"github.com/Iusemywalk88/closer"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/api/chat"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/client/db"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/client/db/pg"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/config"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/repository"
 	chatRepo "github.com/Iusemywalk88/microservice_course/chat-server/internal/repository/chat"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/service"
 	chatService "github.com/Iusemywalk88/microservice_course/chat-server/internal/service/chat"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"log"
 )
 
@@ -17,7 +18,7 @@ type serviceProvider struct {
 	pgConfig   config.PGConfig
 	grpcConfig config.GRPCConfig
 
-	pgPool         *pgxpool.Pool
+	dbClient       db.Client
 	chatRepository repository.ChatRepository
 
 	chatService service.ChatService
@@ -55,31 +56,27 @@ func (s *serviceProvider) GRPCConfig() config.GRPCConfig {
 	return s.grpcConfig
 }
 
-func (s *serviceProvider) PGPool(ctx context.Context) *pgxpool.Pool {
-	if s.pgPool == nil {
-		pool, err := pgxpool.Connect(ctx, s.PGConfig().DSN())
+func (s *serviceProvider) DBClient(ctx context.Context) db.Client {
+	if s.dbClient == nil {
+		cl, err := pg.New(ctx, s.PGConfig().DSN())
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("failed to create db client: %v", err)
 		}
 
-		err = pool.Ping(ctx)
+		err = cl.DB().Ping(ctx)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("ping error: %s", err.Error())
 		}
-		closer.Add(func() error {
-			pool.Close()
-			return nil
-		})
+		closer.Add(cl.Close)
 
-		s.pgPool = pool
+		s.dbClient = cl
 	}
 
-	return s.pgPool
+	return s.dbClient
 }
-
 func (s *serviceProvider) ChatRepository(ctx context.Context) repository.ChatRepository {
 	if s.chatRepository == nil {
-		s.chatRepository = chatRepo.NewRepository(s.PGPool(ctx))
+		s.chatRepository = chatRepo.NewRepository(s.DBClient(ctx))
 	}
 
 	return s.chatRepository

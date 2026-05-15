@@ -2,10 +2,11 @@ package chat
 
 import (
 	"context"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/client/db"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/model"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/repository"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/repository/converter"
 	sq "github.com/Masterminds/squirrel"
-	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 const (
@@ -19,10 +20,10 @@ const (
 )
 
 type repo struct {
-	db *pgxpool.Pool
+	db db.Client
 }
 
-func NewRepository(db *pgxpool.Pool) *repo {
+func NewRepository(db db.Client) repository.ChatRepository {
 	return &repo{db: db}
 }
 
@@ -43,8 +44,13 @@ func (r *repo) Create(ctx context.Context, req *model.Chat) (int64, error) {
 		return 0, err
 	}
 
+	qCT := db.Query{
+		Name:     "chat_repository.Get",
+		QueryRaw: query,
+	}
+
 	var chatID int64
-	err = r.db.QueryRow(ctx, query, args...).Scan(&chatID)
+	err = r.db.DB().QueryRowContext(ctx, qCT, args...).Scan(&chatID)
 	if err != nil {
 		return 0, err
 	}
@@ -62,7 +68,12 @@ func (r *repo) Create(ctx context.Context, req *model.Chat) (int64, error) {
 		return 0, err
 	}
 
-	_, err = r.db.Exec(ctx, query, args...)
+	qCM := db.Query{
+		Name:     "chat_repository.Create",
+		QueryRaw: query,
+	}
+
+	_, err = r.db.DB().ExecContext(ctx, qCM, args...)
 	if err != nil {
 		return 0, err
 	}
@@ -80,7 +91,12 @@ func (r *repo) Delete(ctx context.Context, id int64) error {
 		return err
 	}
 
-	_, err = r.db.Exec(ctx, query, args...)
+	q := db.Query{
+		Name:     "chat_repository.Delete",
+		QueryRaw: query,
+	}
+
+	_, err = r.db.DB().ExecContext(ctx, q, args...)
 	if err != nil {
 		return err
 	}
