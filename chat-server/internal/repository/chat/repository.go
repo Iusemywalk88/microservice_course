@@ -45,7 +45,7 @@ func (r *repo) Create(ctx context.Context, req *model.Chat) (int64, error) {
 	}
 
 	qCT := db.Query{
-		Name:     "chat_repository.Get",
+		Name:     "chat_repository.Create",
 		QueryRaw: query,
 	}
 
