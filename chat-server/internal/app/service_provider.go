@@ -6,6 +6,7 @@ import (
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/api/chat"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/client/db"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/client/db/pg"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/client/db/transaction"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/config"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/repository"
 	chatRepo "github.com/Iusemywalk88/microservice_course/chat-server/internal/repository/chat"
@@ -20,6 +21,7 @@ type serviceProvider struct {
 
 	dbClient       db.Client
 	chatRepository repository.ChatRepository
+	txManager      db.TxManager
 
 	chatService service.ChatService
 
@@ -82,9 +84,17 @@ func (s *serviceProvider) ChatRepository(ctx context.Context) repository.ChatRep
 	return s.chatRepository
 }
 
+func (s *serviceProvider) TxManager(ctx context.Context) db.TxManager {
+	if s.txManager == nil {
+		s.txManager = transaction.NewTransactionManager(s.DBClient(ctx).DB())
+	}
+
+	return s.txManager
+}
+
 func (s *serviceProvider) ChatService(ctx context.Context) service.ChatService {
 	if s.chatService == nil {
-		s.chatService = chatService.NewService(s.ChatRepository(ctx))
+		s.chatService = chatService.NewService(s.ChatRepository(ctx), s.TxManager(ctx))
 	}
 
 	return s.chatService

@@ -1,14 +1,16 @@
 package auth
 
 import (
+	"github.com/Iusemywalk88/microservice_course/auth/internal/client/db"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/repository"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/service"
 )
 
 type serv struct {
-	authRepo repository.AuthRepository
+	authRepo  repository.AuthRepository
+	txManager db.TxManager
 }
 
-func NewService(authRepo repository.AuthRepository) service.AuthService {
-	return serv{authRepo: authRepo}
+func NewService(authRepo repository.AuthRepository, txManager db.TxManager) service.AuthService {
+	return serv{authRepo: authRepo, txManager: txManager}
 }

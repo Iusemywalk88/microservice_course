@@ -6,7 +6,14 @@ import (
 )
 
 func (s serv) Update(ctx context.Context, user *model.UpdateUserInfo) error {
-	err := s.authRepo.Update(ctx, user)
+	err := s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
+		var errTx error
+		errTx = s.authRepo.Update(ctx, user)
+		if errTx != nil {
+			return errTx
+		}
+		return nil
+	})
 	if err != nil {
 		return err
 	}

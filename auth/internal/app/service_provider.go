@@ -6,6 +6,7 @@ import (
 	"github.com/Iusemywalk88/microservice_course/auth/internal/api/auth"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/client/db"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/client/db/pg"
+	"github.com/Iusemywalk88/microservice_course/auth/internal/client/db/transaction"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/config"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/repository"
 	authRepo "github.com/Iusemywalk88/microservice_course/auth/internal/repository/auth"
@@ -20,6 +21,7 @@ type serviceProvider struct {
 
 	dbClient       db.Client
 	authRepository repository.AuthRepository
+	txManager      db.TxManager
 
 	authService service.AuthService
 
@@ -85,10 +87,18 @@ func (s *serviceProvider) AuthRepository(ctx context.Context) repository.AuthRep
 
 func (s *serviceProvider) AuthService(ctx context.Context) service.AuthService {
 	if s.authService == nil {
-		s.authService = authService.NewService(s.AuthRepository(ctx))
+		s.authService = authService.NewService(s.AuthRepository(ctx), s.TxManager(ctx))
 	}
 
 	return s.authService
+}
+
+func (s *serviceProvider) TxManager(ctx context.Context) db.TxManager {
+	if s.txManager == nil {
+		s.txManager = transaction.NewTransactionManager(s.DBClient(ctx).DB())
+	}
+
+	return s.txManager
 }
 
 func (s *serviceProvider) AuthImpl(ctx context.Context) *auth.AuthImplementation {

@@ -28,6 +28,11 @@ type Query struct {
 	QueryRaw string
 }
 
+// Transactor интерфейс для работы с транзакциями
+type Transactor interface {
+	BeginTx(ctx context.Context, txOptions pgx.TxOptions) (pgx.Tx, error)
+}
+
 // SQLExecer комбинирует NamedExecer и QueryExecer
 type SQLExecer interface {
 	NamedExecer
@@ -55,6 +60,7 @@ type Pinger interface {
 // DB интерфейс для работы с БД
 type DB interface {
 	SQLExecer
+	Transactor
 	Pinger
 	Close()
 }
