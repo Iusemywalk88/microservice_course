@@ -10,7 +10,7 @@ import (
 func (i *AuthImplementation) Delete(ctx context.Context, req *desc.DeleteRequest) (*emptypb.Empty, error) {
 	err := i.authService.Delete(ctx, req.GetId())
 	if err != nil {
-		return nil, err
+		return &emptypb.Empty{}, err
 	}
 
 	log.Printf("Delete called with req: %v", req.GetId())

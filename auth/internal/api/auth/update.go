@@ -16,7 +16,7 @@ func (i *AuthImplementation) Update(ctx context.Context, req *desc.UpdateRequest
 		return &emptypb.Empty{}, err
 	}
 
-	log.Printf("Update called with req: %v", req.GetId(), req.GetName().GetValue())
+	log.Printf("Update called with req: %v, %v", req.GetId(), req.GetName().GetValue())
 
 	return &emptypb.Empty{}, nil
 }

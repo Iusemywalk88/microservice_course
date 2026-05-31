@@ -11,16 +11,18 @@ import (
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/gojuno/minimock/v3"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 	"testing"
 )
 
-func TestCreate(t *testing.T) {
+func TestUpdate(t *testing.T) {
 	t.Parallel()
 	type authServiceMockFunc func(mc *minimock.Controller) service.AuthService
 
 	type args struct {
 		ctx context.Context
-		req *desc.CreateRequest
+		req *desc.UpdateRequest
 	}
 
 	var (
@@ -30,28 +32,22 @@ func TestCreate(t *testing.T) {
 		id       = gofakeit.Int64()
 		name     = gofakeit.Name()
 		email    = gofakeit.Email()
-		password = gofakeit.Password(false, false, false, false, false, 12)
 		userRole = model.Role(gofakeit.IntRange(0, 1))
 
 		serviceErr = fmt.Errorf("service error")
 
-		req = &desc.CreateRequest{
-			Name:            name,
-			Email:           email,
-			Password:        password,
-			PasswordConfirm: password,
-			Role:            desc.Role(userRole),
+		req = &desc.UpdateRequest{
+			Id:    id,
+			Name:  wrapperspb.String(name),
+			Email: wrapperspb.String(email),
+			Role:  desc.Role(userRole),
 		}
 
-		user = &model.User{
-			Name:     name,
-			Email:    email,
-			Password: password,
+		user = &model.UpdateUserInfo{
+			ID:       id,
+			Name:     &name,
+			Email:    &email,
 			UserRole: userRole,
-		}
-
-		res = &desc.CreateResponse{
-			Id: id,
 		}
 	)
 	defer t.Cleanup(mc.Finish)
@@ -59,7 +55,7 @@ func TestCreate(t *testing.T) {
 	tests := []struct {
 		name            string
 		args            args
-		want            *desc.CreateResponse
+		want            *emptypb.Empty
 		err             error
 		authServiceMock authServiceMockFunc
 	}{{
@@ -68,11 +64,11 @@ func TestCreate(t *testing.T) {
 			ctx: ctx,
 			req: req,
 		},
-		want: res,
+		want: &emptypb.Empty{},
 		err:  nil,
 		authServiceMock: func(mc *minimock.Controller) service.AuthService {
 			mock := serviceMock.NewAuthServiceMock(mc)
-			mock.CreateMock.Expect(ctx, user).Return(id, nil)
+			mock.UpdateMock.Expect(ctx, user).Return(nil)
 			return mock
 		},
 	},
@@ -82,11 +78,11 @@ func TestCreate(t *testing.T) {
 				ctx: ctx,
 				req: req,
 			},
-			want: nil,
+			want: &emptypb.Empty{},
 			err:  serviceErr,
 			authServiceMock: func(mc *minimock.Controller) service.AuthService {
 				mock := serviceMock.NewAuthServiceMock(mc)
-				mock.CreateMock.Expect(ctx, user).Return(0, serviceErr)
+				mock.UpdateMock.Expect(ctx, user).Return(serviceErr)
 				return mock
 			},
 		},
@@ -100,10 +96,9 @@ func TestCreate(t *testing.T) {
 			authServiceMock := tt.authServiceMock(mc)
 			api := auth.NewAuthImplementation(authServiceMock)
 
-			newID, err := api.Create(tt.args.ctx, tt.args.req)
+			newID, err := api.Update(tt.args.ctx, tt.args.req)
 			require.Equal(t, tt.err, err)
 			require.Equal(t, tt.want, newID)
-
 		})
 	}
 }
