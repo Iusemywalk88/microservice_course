@@ -1,12 +1,12 @@
-package auth
+package pg
 
 import (
 	"context"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/client/db"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/model"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/repository"
-	modelRepo "github.com/Iusemywalk88/microservice_course/auth/internal/repository/auth/model"
-	"github.com/Iusemywalk88/microservice_course/auth/internal/repository/converter"
+	"github.com/Iusemywalk88/microservice_course/auth/internal/repository/auth/pg/converter"
+	modelRepo "github.com/Iusemywalk88/microservice_course/auth/internal/repository/auth/pg/model"
 	sq "github.com/Masterminds/squirrel"
 )
 

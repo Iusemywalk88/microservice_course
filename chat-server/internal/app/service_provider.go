@@ -4,24 +4,33 @@ import (
 	"context"
 	"github.com/Iusemywalk88/closer"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/api/chat"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/client/cache"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/client/cache/redis"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/client/db"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/client/db/pg"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/client/db/transaction"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/config"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/config/env"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/repository"
-	chatRepo "github.com/Iusemywalk88/microservice_course/chat-server/internal/repository/chat"
+	chatRepo "github.com/Iusemywalk88/microservice_course/chat-server/internal/repository/chat/pg"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/service"
 	chatService "github.com/Iusemywalk88/microservice_course/chat-server/internal/service/chat"
+	redigo "github.com/gomodule/redigo/redis"
 	"log"
 )
 
 type serviceProvider struct {
-	pgConfig   config.PGConfig
-	grpcConfig config.GRPCConfig
+	pgConfig    config.PGConfig
+	grpcConfig  config.GRPCConfig
+	redisConfig config.RedisConfig
 
-	dbClient       db.Client
+	dbClient  db.Client
+	txManager db.TxManager
+
+	redisPool   *redigo.Pool
+	redisClient cache.RedisClient
+
 	chatRepository repository.ChatRepository
-	txManager      db.TxManager
 
 	chatService service.ChatService
 
@@ -34,7 +43,7 @@ func newServiceProvider() *serviceProvider {
 
 func (s *serviceProvider) PGConfig() config.PGConfig {
 	if s.pgConfig == nil {
-		cfg, err := config.NewPGConfig()
+		cfg, err := env.NewPGConfig()
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -47,7 +56,7 @@ func (s *serviceProvider) PGConfig() config.PGConfig {
 
 func (s *serviceProvider) GRPCConfig() config.GRPCConfig {
 	if s.grpcConfig == nil {
-		cfg, err := config.NewGRPCConfig()
+		cfg, err := env.NewGRPCConfig()
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -56,6 +65,41 @@ func (s *serviceProvider) GRPCConfig() config.GRPCConfig {
 	}
 
 	return s.grpcConfig
+}
+
+func (s *serviceProvider) RedisConfig() config.RedisConfig {
+	if s.redisConfig == nil {
+		cfg, err := env.NewRedisConfig()
+		if err != nil {
+			log.Fatalf("failed to get redis config: %s", err.Error())
+		}
+
+		s.redisConfig = cfg
+	}
+
+	return s.redisConfig
+}
+
+func (s *serviceProvider) RedisPool() *redigo.Pool {
+	if s.redisPool == nil {
+		s.redisPool = &redigo.Pool{
+			MaxIdle:     s.RedisConfig().MaxIdle(),
+			IdleTimeout: s.RedisConfig().IdleTimeout(),
+			DialContext: func(ctx context.Context) (redigo.Conn, error) {
+				return redigo.DialContext(ctx, "tcp", s.RedisConfig().Address())
+			},
+		}
+	}
+
+	return s.redisPool
+}
+
+func (s *serviceProvider) RedisClient() cache.RedisClient {
+	if s.redisClient == nil {
+		s.redisClient = redis.NewClient(s.RedisPool(), s.RedisConfig())
+	}
+
+	return s.redisClient
 }
 
 func (s *serviceProvider) DBClient(ctx context.Context) db.Client {

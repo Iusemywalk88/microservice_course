@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/joho/godotenv"
+	"time"
 )
 
 func Load(path string) error {
@@ -11,4 +12,19 @@ func Load(path string) error {
 	}
 
 	return nil
+}
+
+type PGConfig interface {
+	DSN() string
+}
+
+type GRPCConfig interface {
+	Address() string
+}
+
+type RedisConfig interface {
+	Address() string
+	ConnectionTimeout() time.Duration
+	MaxIdle() int
+	IdleTimeout() time.Duration
 }
