@@ -94,6 +94,20 @@ func (c *client) Get(ctx context.Context, key string) (interface{}, error) {
 	return value, nil
 }
 
+func (c *client) Delete(ctx context.Context, key string) error {
+	err := c.execute(ctx, func(ctx context.Context, conn redis.Conn) error {
+		_, err := conn.Do("DEL", key)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (c *client) Expire(ctx context.Context, key string, expiration time.Duration) error {
 	err := c.execute(ctx, func(ctx context.Context, conn redis.Conn) error {
 		_, err := conn.Do("EXPIRE", key, int(expiration.Seconds()))

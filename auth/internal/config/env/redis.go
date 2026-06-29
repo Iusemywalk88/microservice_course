@@ -15,6 +15,7 @@ const (
 	redisConnectionTimeoutEnvName = "REDIS_CONNECTION_TIMEOUT_SEC"
 	redisMaxIdleEnvName           = "REDIS_MAX_IDLE"
 	redisIdleTimeoutEnvName       = "REDIS_IDLE_TIMEOUT_SEC"
+	expirationEnvName             = "REDIS_EXPIRATION_SEC"
 )
 
 type redisConfig struct {
@@ -25,6 +26,7 @@ type redisConfig struct {
 
 	maxIdle     int
 	idleTimeout time.Duration
+	expiration  time.Duration
 }
 
 func NewRedisConfig() (*redisConfig, error) {
@@ -46,6 +48,16 @@ func NewRedisConfig() (*redisConfig, error) {
 	connectionTimeout, err := strconv.ParseInt(connectionTimeoutStr, 10, 64)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse connection timeout")
+	}
+
+	expirationTime := os.Getenv(expirationEnvName)
+	if len(expirationTime) == 0 {
+		return nil, errors.New("redis expiration not found")
+	}
+
+	expirationDuration, err := strconv.ParseInt(expirationTime, 10, 64)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse expiration")
 	}
 
 	maxIdleStr := os.Getenv(redisMaxIdleEnvName)
@@ -74,6 +86,7 @@ func NewRedisConfig() (*redisConfig, error) {
 		connectionTimeout: time.Duration(connectionTimeout) * time.Second,
 		maxIdle:           maxIdle,
 		idleTimeout:       time.Duration(idleTimeout) * time.Second,
+		expiration:        time.Duration(expirationDuration) * time.Second,
 	}, nil
 }
 
@@ -92,3 +105,5 @@ func (cfg *redisConfig) MaxIdle() int {
 func (cfg *redisConfig) IdleTimeout() time.Duration {
 	return cfg.idleTimeout
 }
+
+func (cfg *redisConfig) Expiration() time.Duration { return cfg.expiration }

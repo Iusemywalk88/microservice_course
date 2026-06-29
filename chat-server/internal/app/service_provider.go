@@ -13,6 +13,7 @@ import (
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/config/env"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/repository"
 	chatRepo "github.com/Iusemywalk88/microservice_course/chat-server/internal/repository/chat/pg"
+	redisRepo "github.com/Iusemywalk88/microservice_course/chat-server/internal/repository/chat/redis"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/service"
 	chatService "github.com/Iusemywalk88/microservice_course/chat-server/internal/service/chat"
 	redigo "github.com/gomodule/redigo/redis"
@@ -27,8 +28,9 @@ type serviceProvider struct {
 	dbClient  db.Client
 	txManager db.TxManager
 
-	redisPool   *redigo.Pool
-	redisClient cache.RedisClient
+	redisPool       *redigo.Pool
+	redisClient     cache.RedisClient
+	redisRepository repository.ChatRepository
 
 	chatRepository repository.ChatRepository
 
@@ -73,7 +75,6 @@ func (s *serviceProvider) RedisConfig() config.RedisConfig {
 		if err != nil {
 			log.Fatalf("failed to get redis config: %s", err.Error())
 		}
-
 		s.redisConfig = cfg
 	}
 
@@ -102,6 +103,16 @@ func (s *serviceProvider) RedisClient() cache.RedisClient {
 	return s.redisClient
 }
 
+func (s *serviceProvider) RedisRepository(ctx context.Context) repository.ChatRepository {
+	if s.redisRepository == nil {
+		s.redisRepository = redisRepo.NewRepository(
+			s.RedisClient(),
+			s.RedisConfig().Expiration(),
+		)
+	}
+	return s.redisRepository
+}
+
 func (s *serviceProvider) DBClient(ctx context.Context) db.Client {
 	if s.dbClient == nil {
 		cl, err := pg.New(ctx, s.PGConfig().DSN())
@@ -120,9 +131,13 @@ func (s *serviceProvider) DBClient(ctx context.Context) db.Client {
 
 	return s.dbClient
 }
+
 func (s *serviceProvider) ChatRepository(ctx context.Context) repository.ChatRepository {
 	if s.chatRepository == nil {
-		s.chatRepository = chatRepo.NewRepository(s.DBClient(ctx))
+		pgRepo := chatRepo.NewRepository(s.DBClient(ctx))
+		rediRepo := s.RedisRepository(ctx)
+
+		s.chatRepository = repository.NewCachedChatRepository(pgRepo, rediRepo)
 	}
 
 	return s.chatRepository

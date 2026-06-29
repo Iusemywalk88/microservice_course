@@ -13,6 +13,7 @@ import (
 	"github.com/Iusemywalk88/microservice_course/auth/internal/config/env"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/repository"
 	authRepo "github.com/Iusemywalk88/microservice_course/auth/internal/repository/auth/pg"
+	redisRepo "github.com/Iusemywalk88/microservice_course/auth/internal/repository/auth/redis"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/service"
 	authService "github.com/Iusemywalk88/microservice_course/auth/internal/service/auth"
 	redigo "github.com/gomodule/redigo/redis"
@@ -27,8 +28,9 @@ type serviceProvider struct {
 	dbClient  db.Client
 	txManager db.TxManager
 
-	redisPool   *redigo.Pool
-	redisClient cache.RedisClient
+	redisPool       *redigo.Pool
+	redisClient     cache.RedisClient
+	redisRepository repository.AuthRepository
 
 	authRepository repository.AuthRepository
 	authService    service.AuthService
@@ -101,6 +103,16 @@ func (s *serviceProvider) RedisClient() cache.RedisClient {
 	return s.redisClient
 }
 
+func (s *serviceProvider) RedisRepository(ctx context.Context) repository.AuthRepository {
+	if s.redisRepository == nil {
+		s.redisRepository = redisRepo.NewRepository(
+			s.RedisClient(),
+			s.RedisConfig().Expiration(),
+		)
+	}
+	return s.redisRepository
+}
+
 func (s *serviceProvider) DBClient(ctx context.Context) db.Client {
 	if s.dbClient == nil {
 		cl, err := pg.New(ctx, s.PGConfig().DSN())
@@ -122,7 +134,10 @@ func (s *serviceProvider) DBClient(ctx context.Context) db.Client {
 
 func (s *serviceProvider) AuthRepository(ctx context.Context) repository.AuthRepository {
 	if s.authRepository == nil {
-		s.authRepository = authRepo.NewRepository(s.DBClient(ctx))
+		pgRepo := authRepo.NewRepository(s.DBClient(ctx))
+		rediRepo := s.RedisRepository(ctx)
+
+		s.authRepository = repository.NewCachedAuthRepository(pgRepo, rediRepo)
 	}
 
 	return s.authRepository

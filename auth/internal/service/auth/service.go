@@ -8,6 +8,7 @@ import (
 
 type serv struct {
 	authRepo  repository.AuthRepository
+	redisRepo repository.AuthRepository
 	txManager db.TxManager
 }
 

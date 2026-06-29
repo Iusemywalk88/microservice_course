@@ -27,4 +27,5 @@ type RedisConfig interface {
 	ConnectionTimeout() time.Duration
 	MaxIdle() int
 	IdleTimeout() time.Duration
+	Expiration() time.Duration
 }
