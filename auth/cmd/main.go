@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
-	"github.com/Iusemywalk88/microservice_course/auth/internal/app"
 	"log"
+
+	"github.com/Iusemywalk88/microservice_course/auth/internal/app"
 )
 
 func main() {

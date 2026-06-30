@@ -2,12 +2,14 @@ package pg
 
 import (
 	"context"
+
+	sq "github.com/Masterminds/squirrel"
+
 	"github.com/Iusemywalk88/microservice_course/auth/internal/client/db"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/model"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/repository"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/repository/auth/pg/converter"
 	modelRepo "github.com/Iusemywalk88/microservice_course/auth/internal/repository/auth/pg/model"
-	sq "github.com/Masterminds/squirrel"
 )
 
 const (

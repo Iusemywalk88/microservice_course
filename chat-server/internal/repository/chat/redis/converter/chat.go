@@ -1,11 +1,12 @@
 package converter
 
 import (
-	"github.com/Iusemywalk88/microservice_course/chat-server/internal/model"
-	modelRepo "github.com/Iusemywalk88/microservice_course/chat-server/internal/repository/chat/redis/model"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/model"
+	modelRepo "github.com/Iusemywalk88/microservice_course/chat-server/internal/repository/chat/redis/model"
 )
 
 func intToStringConverter(chat *model.Chat) string {

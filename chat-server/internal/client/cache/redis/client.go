@@ -2,10 +2,11 @@ package redis
 
 import (
 	"context"
-	"github.com/Iusemywalk88/microservice_course/chat-server/internal/client/cache"
-	"github.com/Iusemywalk88/microservice_course/chat-server/internal/config"
 	"log"
 	"time"
+
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/client/cache"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/config"
 
 	"github.com/gomodule/redigo/redis"
 )

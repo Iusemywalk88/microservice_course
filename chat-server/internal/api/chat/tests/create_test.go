@@ -3,18 +3,21 @@ package tests
 import (
 	"context"
 	"fmt"
-	"github.com/Iusemywalk88/microservice_course/chat-server/internal/api/chat"
 	"strconv"
+
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/api/chat"
 
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/model"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/service"
 
-	serviceMock "github.com/Iusemywalk88/microservice_course/chat-server/internal/service/mocks"
-	desc "github.com/Iusemywalk88/microservice_course/chat-server/pkg/chat_v1"
+	"testing"
+
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/gojuno/minimock/v3"
 	"github.com/stretchr/testify/require"
-	"testing"
+
+	serviceMock "github.com/Iusemywalk88/microservice_course/chat-server/internal/service/mocks"
+	desc "github.com/Iusemywalk88/microservice_course/chat-server/pkg/chat_v1"
 )
 
 func TestCreate(t *testing.T) {

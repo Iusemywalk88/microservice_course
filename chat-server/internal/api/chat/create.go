@@ -2,6 +2,7 @@ package chat
 
 import (
 	"context"
+
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/converter"
 	desc "github.com/Iusemywalk88/microservice_course/chat-server/pkg/chat_v1"
 )

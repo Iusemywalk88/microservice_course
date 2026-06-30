@@ -3,15 +3,17 @@ package tests
 import (
 	"context"
 	"fmt"
-	"github.com/Iusemywalk88/microservice_course/auth/internal/api/auth"
-	"github.com/Iusemywalk88/microservice_course/auth/internal/service"
-	serviceMock "github.com/Iusemywalk88/microservice_course/auth/internal/service/mocks"
-	desc "github.com/Iusemywalk88/microservice_course/auth/pkg/user_v1"
+	"testing"
+
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/gojuno/minimock/v3"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"testing"
+
+	"github.com/Iusemywalk88/microservice_course/auth/internal/api/auth"
+	"github.com/Iusemywalk88/microservice_course/auth/internal/service"
+	serviceMock "github.com/Iusemywalk88/microservice_course/auth/internal/service/mocks"
+	desc "github.com/Iusemywalk88/microservice_course/auth/pkg/user_v1"
 )
 
 func TestDelete(t *testing.T) {

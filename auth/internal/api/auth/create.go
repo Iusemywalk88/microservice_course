@@ -2,11 +2,13 @@ package auth
 
 import (
 	"context"
-	"github.com/Iusemywalk88/microservice_course/auth/internal/converter"
-	desc "github.com/Iusemywalk88/microservice_course/auth/pkg/user_v1"
+	"log"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"log"
+
+	"github.com/Iusemywalk88/microservice_course/auth/internal/converter"
+	desc "github.com/Iusemywalk88/microservice_course/auth/pkg/user_v1"
 )
 
 func (i *AuthImplementation) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {

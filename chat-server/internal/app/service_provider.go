@@ -2,7 +2,11 @@ package app
 
 import (
 	"context"
+	"log"
+
 	"github.com/Iusemywalk88/closer"
+	redigo "github.com/gomodule/redigo/redis"
+
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/api/chat"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/client/cache"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/client/cache/redis"
@@ -16,8 +20,6 @@ import (
 	redisRepo "github.com/Iusemywalk88/microservice_course/chat-server/internal/repository/chat/redis"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/service"
 	chatService "github.com/Iusemywalk88/microservice_course/chat-server/internal/service/chat"
-	redigo "github.com/gomodule/redigo/redis"
-	"log"
 )
 
 type serviceProvider struct {

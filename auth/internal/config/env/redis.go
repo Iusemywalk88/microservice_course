@@ -10,12 +10,12 @@ import (
 )
 
 const (
-	redisHostEnvName              = "REDIS_HOST"
-	redisPortEnvName              = "REDIS_PORT"
-	redisConnectionTimeoutEnvName = "REDIS_CONNECTION_TIMEOUT_SEC"
-	redisMaxIdleEnvName           = "REDIS_MAX_IDLE"
-	redisIdleTimeoutEnvName       = "REDIS_IDLE_TIMEOUT_SEC"
-	expirationEnvName             = "REDIS_EXPIRATION_SEC"
+	redisHostEnvName                 = "REDIS_HOST"
+	redisPortEnvName                 = "REDIS_PORT"
+	redisConnectionTimeoutSecEnvName = "REDIS_CONNECTION_TIMEOUT_SEC"
+	redisMaxIdleEnvName              = "REDIS_MAX_IDLE"
+	redisIdleTimeoutSecEnvName       = "REDIS_IDLE_TIMEOUT_SEC"
+	expirationSecEnvName             = "REDIS_EXPIRATION_SEC"
 )
 
 type redisConfig struct {
@@ -40,7 +40,7 @@ func NewRedisConfig() (*redisConfig, error) {
 		return nil, errors.New("redis port not found")
 	}
 
-	connectionTimeoutStr := os.Getenv(redisConnectionTimeoutEnvName)
+	connectionTimeoutStr := os.Getenv(redisConnectionTimeoutSecEnvName)
 	if len(connectionTimeoutStr) == 0 {
 		return nil, errors.New("redis connection timeout not found")
 	}
@@ -50,7 +50,7 @@ func NewRedisConfig() (*redisConfig, error) {
 		return nil, errors.Wrap(err, "failed to parse connection timeout")
 	}
 
-	expirationTime := os.Getenv(expirationEnvName)
+	expirationTime := os.Getenv(expirationSecEnvName)
 	if len(expirationTime) == 0 {
 		return nil, errors.New("redis expiration not found")
 	}
@@ -70,7 +70,7 @@ func NewRedisConfig() (*redisConfig, error) {
 		return nil, errors.Wrap(err, "failed to parse max idle")
 	}
 
-	idleTimeoutStr := os.Getenv(redisIdleTimeoutEnvName)
+	idleTimeoutStr := os.Getenv(redisIdleTimeoutSecEnvName)
 	if len(idleTimeoutStr) == 0 {
 		return nil, errors.New("redis idle timeout not found")
 	}

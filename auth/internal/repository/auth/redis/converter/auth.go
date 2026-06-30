@@ -2,9 +2,10 @@ package converter
 
 import (
 	"database/sql"
+	"time"
+
 	"github.com/Iusemywalk88/microservice_course/auth/internal/model"
 	modelRepo "github.com/Iusemywalk88/microservice_course/auth/internal/repository/auth/redis/model"
-	"time"
 )
 
 func updatedAtToInt(user *model.User) *int64 {

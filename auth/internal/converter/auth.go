@@ -1,9 +1,10 @@
 package converter
 
 import (
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/Iusemywalk88/microservice_course/auth/internal/model"
 	desc "github.com/Iusemywalk88/microservice_course/auth/pkg/user_v1"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func ToUserFromService(user *model.User) *desc.GetResponse {

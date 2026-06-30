@@ -3,13 +3,15 @@ package redis
 import (
 	"context"
 	"fmt"
+	"time"
+
+	redigo "github.com/gomodule/redigo/redis"
+
 	"github.com/Iusemywalk88/microservice_course/auth/internal/client/cache"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/model"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/repository"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/repository/auth/redis/converter"
 	modelRepo "github.com/Iusemywalk88/microservice_course/auth/internal/repository/auth/redis/model"
-	redigo "github.com/gomodule/redigo/redis"
-	"time"
 )
 
 type repo struct {

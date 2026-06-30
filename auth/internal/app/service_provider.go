@@ -2,7 +2,11 @@ package app
 
 import (
 	"context"
+	"log"
+
 	"github.com/Iusemywalk88/closer"
+	redigo "github.com/gomodule/redigo/redis"
+
 	"github.com/Iusemywalk88/microservice_course/auth/internal/api/auth"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/client/cache"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/client/cache/redis"
@@ -16,8 +20,6 @@ import (
 	redisRepo "github.com/Iusemywalk88/microservice_course/auth/internal/repository/auth/redis"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/service"
 	authService "github.com/Iusemywalk88/microservice_course/auth/internal/service/auth"
-	redigo "github.com/gomodule/redigo/redis"
-	"log"
 )
 
 type serviceProvider struct {

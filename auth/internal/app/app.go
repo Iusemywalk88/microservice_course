@@ -2,14 +2,16 @@ package app
 
 import (
 	"context"
+	"log"
+	"net"
+
 	"github.com/Iusemywalk88/closer"
-	"github.com/Iusemywalk88/microservice_course/auth/internal/config"
-	desc "github.com/Iusemywalk88/microservice_course/auth/pkg/user_v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
-	"log"
-	"net"
+
+	"github.com/Iusemywalk88/microservice_course/auth/internal/config"
+	desc "github.com/Iusemywalk88/microservice_course/auth/pkg/user_v1"
 )
 
 type App struct {

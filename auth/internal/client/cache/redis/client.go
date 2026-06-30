@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+
 	"github.com/Iusemywalk88/microservice_course/auth/internal/client/cache"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/config"
 

@@ -4,16 +4,18 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"testing"
+
+	"github.com/brianvoe/gofakeit/v6"
+	"github.com/gojuno/minimock/v3"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/Iusemywalk88/microservice_course/auth/internal/api/auth"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/model"
 	"github.com/Iusemywalk88/microservice_course/auth/internal/service"
 	serviceMock "github.com/Iusemywalk88/microservice_course/auth/internal/service/mocks"
 	desc "github.com/Iusemywalk88/microservice_course/auth/pkg/user_v1"
-	"github.com/brianvoe/gofakeit/v6"
-	"github.com/gojuno/minimock/v3"
-	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/types/known/timestamppb"
-	"testing"
 )
 
 func TestGet(t *testing.T) {

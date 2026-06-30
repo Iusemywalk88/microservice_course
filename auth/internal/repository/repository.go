@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+
 	"github.com/Iusemywalk88/microservice_course/auth/internal/model"
 )
 
