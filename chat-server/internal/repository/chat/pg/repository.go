@@ -1,12 +1,14 @@
-package chat
+package pg
 
 import (
 	"context"
+
+	sq "github.com/Masterminds/squirrel"
+
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/client/db"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/model"
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/repository"
-	"github.com/Iusemywalk88/microservice_course/chat-server/internal/repository/converter"
-	sq "github.com/Masterminds/squirrel"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/repository/chat/pg/converter"
 )
 
 const (

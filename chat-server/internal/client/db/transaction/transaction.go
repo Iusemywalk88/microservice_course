@@ -2,10 +2,12 @@ package transaction
 
 import (
 	"context"
-	"github.com/Iusemywalk88/microservice_course/chat-server/internal/client/db"
-	"github.com/Iusemywalk88/microservice_course/chat-server/internal/client/db/pg"
+
 	"github.com/jackc/pgx/v4"
 	"github.com/pkg/errors"
+
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/client/db"
+	"github.com/Iusemywalk88/microservice_course/chat-server/internal/client/db/pg"
 )
 
 type manager struct {

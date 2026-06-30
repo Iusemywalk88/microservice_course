@@ -2,9 +2,10 @@ package auth
 
 import (
 	"context"
+	"log"
+
 	"github.com/Iusemywalk88/microservice_course/auth/internal/converter"
 	desc "github.com/Iusemywalk88/microservice_course/auth/pkg/user_v1"
-	"log"
 )
 
 func (i *AuthImplementation) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {

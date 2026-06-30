@@ -1,11 +1,12 @@
-package config
+package env
 
 import (
-	"github.com/pkg/errors"
 	"os"
+
+	"github.com/pkg/errors"
 )
 
-const dsnEnvName = "AUTH_PG_DSN"
+const dsnEnvName = "CHAT_PG_DSN"
 
 type PGConfig interface {
 	DSN() string

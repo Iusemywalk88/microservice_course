@@ -1,9 +1,10 @@
 package converter
 
 import (
+	"strconv"
+
 	"github.com/Iusemywalk88/microservice_course/chat-server/internal/model"
 	desc "github.com/Iusemywalk88/microservice_course/chat-server/pkg/chat_v1"
-	"strconv"
 )
 
 func ToServiceFromDesc(req *desc.CreateRequest) (*model.Chat, error) {

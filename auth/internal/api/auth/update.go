@@ -2,10 +2,12 @@ package auth
 
 import (
 	"context"
+	"log"
+
+	"google.golang.org/protobuf/types/known/emptypb"
+
 	"github.com/Iusemywalk88/microservice_course/auth/internal/converter"
 	desc "github.com/Iusemywalk88/microservice_course/auth/pkg/user_v1"
-	"google.golang.org/protobuf/types/known/emptypb"
-	"log"
 )
 
 func (i *AuthImplementation) Update(ctx context.Context, req *desc.UpdateRequest) (*emptypb.Empty, error) {
@@ -16,7 +18,7 @@ func (i *AuthImplementation) Update(ctx context.Context, req *desc.UpdateRequest
 		return &emptypb.Empty{}, err
 	}
 
-	log.Printf("Update called with req: %v", req.GetId(), req.GetName().GetValue())
+	log.Printf("Update called with req: %v, %v", req.GetId(), req.GetName().GetValue())
 
 	return &emptypb.Empty{}, nil
 }

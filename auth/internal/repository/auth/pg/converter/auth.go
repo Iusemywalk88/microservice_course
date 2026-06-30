@@ -2,7 +2,7 @@ package converter
 
 import (
 	"github.com/Iusemywalk88/microservice_course/auth/internal/model"
-	modelRepo "github.com/Iusemywalk88/microservice_course/auth/internal/repository/auth/model"
+	modelRepo "github.com/Iusemywalk88/microservice_course/auth/internal/repository/auth/pg/model"
 )
 
 func ToUserFromRepo(user *modelRepo.User) *model.User {
